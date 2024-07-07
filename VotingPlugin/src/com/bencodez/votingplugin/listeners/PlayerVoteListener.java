@@ -52,8 +52,14 @@ public class PlayerVoteListener implements Listener {
 		plugin.debug("Processing PlayerVoteEvent: " + playerName + "/" + event.getServiceSite());
 		if (!PlayerManager.getInstance().isValidUser(playerName, plugin.getConfigFile().isAllowUnJoinedCheckServer())) {
 			if (!plugin.getConfigFile().isAllowUnjoined()) {
-				plugin.getLogger().warning("Player " + playerName
-						+ " has not joined before, disregarding vote, set AllowUnjoined to true to prevent this");
+
+				if (!playerName.startsWith(".")) {
+					PlayerVoteEvent newEvent = new PlayerVoteEvent(event.getVoteSite(), "." + event.getPlayer(), event.getServiceSite(), event.isRealVote());
+					onplayerVote(newEvent);
+				} else {
+					plugin.getLogger().warning("Player " + playerName
+							+ " has not joined before, disregarding vote, set AllowUnjoined to true to prevent this");
+				}
 				if (event.isBungee() && plugin.getBungeeSettings().isRemoveInvalidUsers()) {
 					plugin.getVotingPluginUserManager().getVotingPluginUser(playerName).remove();
 				}
